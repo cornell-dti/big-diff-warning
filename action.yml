@@ -1,0 +1,5 @@
+name: 'big-diff-warning'
+description: 'Warn against big diffs in PR'
+runs:
+  using: 'node12'
+  main: 'compiled/index.js'

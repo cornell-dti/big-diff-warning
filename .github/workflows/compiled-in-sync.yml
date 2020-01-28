@@ -1,0 +1,19 @@
+name: Sync
+on: push
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    name: Check
+    steps:
+      - uses: actions/checkout@master
+      - name: Compile
+        run: yarn && yarn compile
+      - name: Ensure compiled/index.js is in sync with sources
+        run: |
+          if [[ `git status --porcelain` ]]; then
+            echo "Please run yarn compile before commit."
+            exit 1
+          else
+            echo "Things are in sync!"
+          fi

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ES2015",
+    "strict": true,
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "lib": ["dom", "esnext"]
+  },
+  "include": ["src"]
+}

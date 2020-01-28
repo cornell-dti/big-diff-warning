@@ -1,0 +1,22 @@
+{
+  "name": "big-diff-warning",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "precompile": "yarn build",
+    "compile": "ncc build dist/index.js -o compiled -m"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.2",
+    "@actions/github": "^2.1.0",
+    "@octokit/rest": "^16.39.0",
+    "diff": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/diff": "^4.0.2",
+    "@zeit/ncc": "^0.21.0",
+    "typescript": "^3.7.5"
+  }
+}

@@ -1,0 +1,12 @@
+name: PR Test
+on: pull_request
+
+jobs:
+  warn-if-big:
+    runs-on: ubuntu-latest
+    name: Warn if the PR is too big
+    steps:
+      - uses: actions/checkout@master
+      - uses: ./
+        env:
+          BOT_TOKEN: '${{ secrets.BOT_TOKEN }}'
