@@ -1,4 +1,4 @@
-name: Sync
+name: CI
 on: push
 
 jobs:
@@ -7,8 +7,12 @@ jobs:
     name: Check
     steps:
       - uses: actions/checkout@master
+      - name: Yarn Install
+        run: yarn
+      - name: Test
+        run: yarn test
       - name: Compile
-        run: yarn && yarn compile
+        run: yarn compile
       - name: Ensure compiled/index.js is in sync with sources
         run: |
           if [[ `git status --porcelain` ]]; then
