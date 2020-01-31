@@ -7,6 +7,8 @@ jobs:
     name: Check
     steps:
       - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
       - name: Yarn Install
         run: yarn
       - name: Test
