@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import { getDiff, commentOnPullRequest, requestReview } from './github';
 import computeSignificantLines from './diff';
 
-const THRESHOLD = 1;
+const THRESHOLD = 1000;
 
 const main = async (): Promise<void> => {
   const BOT_TOKEN = process.env.BOT_TOKEN;
