@@ -4,7 +4,7 @@ import computeSignificantLines from './diff';
 it('Empty diff has 0 lines of change.', () => expect(computeSignificantLines('')).toBe(0));
 
 const testOnRepo = (commit1: string, commit2: string, expected: number): void => {
-  it(`Can compute against real diffs ${commit1} -> ${commit2}.`, () => {
+  it(`Can compute against real diffs ${commit1} <- ${commit2}.`, () => {
     const diffString = spawnSync('git', ['diff', commit1, commit2]).stdout.toString();
     expect(computeSignificantLines(diffString)).toBe(expected);
   });
