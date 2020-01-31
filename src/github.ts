@@ -54,6 +54,7 @@ export const commentOnPullRequest = async (
     repo,
     issue_number: number
   });
+  console.log(`Current comments: ${comments}.`);
   const existingComment = comments.find(
     comment => comment.user.login === USER_LOGIN && comment.body.startsWith(prefix)
   );
