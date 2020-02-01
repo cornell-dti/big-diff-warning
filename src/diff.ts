@@ -80,6 +80,7 @@ export const reduceMergedLines = ({
   addStatistics.forEach((addCount, line) => {
     const deleteCount = reducedDeleteStatistics.get(line);
     if (deleteCount == null) {
+      reducedAddStatistics.set(line, addCount);
       return;
     }
     if (addCount === deleteCount) {

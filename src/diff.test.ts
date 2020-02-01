@@ -96,18 +96,26 @@ it('reduceMergedLines works', () => {
     addStatistics: new Map([
       ['a', 3],
       ['b', 3],
-      ['c', 3]
+      ['c', 3],
+      ['d', 5]
     ]),
     deleteStatistics: new Map([
       ['a', 3],
       ['b', 2],
-      ['c', 4]
+      ['c', 4],
+      ['e', 6]
     ])
   });
   const addStatistics = Array.from(result.addStatistics.entries());
   const deleteStatistics = Array.from(result.deleteStatistics.entries());
-  expect(addStatistics).toEqual([['b', 1]]);
-  expect(deleteStatistics).toEqual([['c', 1]]);
+  expect(addStatistics).toEqual([
+    ['b', 1],
+    ['d', 5]
+  ]);
+  expect(deleteStatistics).toEqual([
+    ['c', 1],
+    ['e', 6]
+  ]);
 });
 
 it('Empty diff has 0 lines of change.', () => expect(computeSignificantLines('')).toBe(0));
@@ -122,7 +130,7 @@ const testOnRepo = (commit1: string, commit2: string, expected: number): void =>
 testOnRepo(
   '79fc97d7a9dd644914e3942170b8fd5a4d7f27fb',
   'caacb1aeb2be692fe8803ac91ca7c04493830fcd',
-  7
+  13
 );
 
 testOnRepo(
@@ -134,11 +142,11 @@ testOnRepo(
 testOnRepo(
   'ebdffbe230e3a98cc2383fe09c8fbb853e6784fd',
   '26af977281bb05191206e477ddb4fbf80d9e750b',
-  6
+  8
 );
 
 testOnRepo(
   '26af977281bb05191206e477ddb4fbf80d9e750b',
   '557ae1bac01009919feaf615489d14c3a818c8db',
-  24
+  26
 );
