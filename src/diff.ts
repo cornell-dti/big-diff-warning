@@ -48,21 +48,48 @@ const getDiffStatistics = ({
   return { oldFileName, newFileName, addStatistics, deleteStatistics };
 };
 
+type MergedChangeStatistics = {
+  readonly addStatistics: Map<string, number>;
+  readonly deleteStatistics: Map<string, number>;
+};
+
+export const mergeDiffStatistics = (
+  statisticsList: readonly ChangeStatistics[]
+): MergedChangeStatistics => {
+  const totalAddStatistics = new Map<string, number>();
+  const totalDeleteStatistics = new Map<string, number>();
+  statisticsList.forEach(({ addStatistics, deleteStatistics }) => {
+    addStatistics.forEach((count, line) => {
+      totalAddStatistics.set(line, (totalAddStatistics.get(line) ?? 0) + count);
+    });
+    deleteStatistics.forEach((count, line) => {
+      totalDeleteStatistics.set(line, (totalDeleteStatistics.get(line) ?? 0) + count);
+    });
+  });
+  return { addStatistics: totalAddStatistics, deleteStatistics: totalDeleteStatistics };
+};
+
 export default (diffString: string): number => {
   const parsedDiff = Diff.parsePatch(diffString);
-  let significantChangedLines = 0;
-  parsedDiff.forEach(diff => {
-    if (shouldDiffBeIgnored(diff)) {
-      return;
-    }
-    const { oldFileName, newFileName, addStatistics, deleteStatistics } = getDiffStatistics(diff);
-    const signficantLinesForOneFile =
-      Array.from(addStatistics.values()).reduce((accumulator, count) => accumulator + count, 0) +
-      Array.from(deleteStatistics.values()).reduce((accumulator, count) => accumulator + count, 0);
-    console.log(
-      `Change ${oldFileName} => ${newFileName} has ${signficantLinesForOneFile} lines diff.`
-    );
-    significantChangedLines += signficantLinesForOneFile;
-  });
-  return significantChangedLines;
+  const statisticsList = parsedDiff
+    .filter(diff => !shouldDiffBeIgnored(diff))
+    .map(diff => {
+      const diffStatistics = getDiffStatistics(diff);
+      const { oldFileName, newFileName, addStatistics, deleteStatistics } = diffStatistics;
+      const signficantLinesForOneFile =
+        Array.from(addStatistics.values()).reduce((accumulator, count) => accumulator + count, 0) +
+        Array.from(deleteStatistics.values()).reduce(
+          (accumulator, count) => accumulator + count,
+          0
+        );
+      console.log(
+        `Change ${oldFileName} => ${newFileName} has ${signficantLinesForOneFile} lines diff.`
+      );
+      return diffStatistics;
+    });
+  const { addStatistics, deleteStatistics } = mergeDiffStatistics(statisticsList);
+  const signficantLinesForAllFiles =
+    Array.from(addStatistics.values()).reduce((accumulator, count) => accumulator + count, 0) +
+    Array.from(deleteStatistics.values()).reduce((accumulator, count) => accumulator + count, 0);
+  return signficantLinesForAllFiles;
 };
