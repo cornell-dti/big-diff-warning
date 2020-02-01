@@ -53,6 +53,7 @@ type MergedChangeStatistics = {
   readonly deleteStatistics: Map<string, number>;
 };
 
+// Exposed for testing.
 export const mergeDiffStatistics = (
   statisticsList: readonly ChangeStatistics[]
 ): MergedChangeStatistics => {
@@ -69,6 +70,47 @@ export const mergeDiffStatistics = (
   return { addStatistics: totalAddStatistics, deleteStatistics: totalDeleteStatistics };
 };
 
+// Exposed for testing.
+export const reduceMergedLines = ({
+  addStatistics,
+  deleteStatistics
+}: MergedChangeStatistics): MergedChangeStatistics => {
+  const reducedAddStatistics = new Map<string, number>();
+  const reducedDeleteStatistics = new Map<string, number>(deleteStatistics);
+  addStatistics.forEach((addCount, line) => {
+    const deleteCount = reducedDeleteStatistics.get(line);
+    if (deleteCount == null) {
+      reducedAddStatistics.set(line, addCount);
+      return;
+    }
+    if (addCount === deleteCount) {
+      // They completely cancel out.
+      reducedDeleteStatistics.delete(line);
+    } else if (addCount > deleteCount) {
+      // Add is more than delete. Update add, remove from delete.
+      reducedAddStatistics.set(line, addCount - deleteCount);
+      reducedDeleteStatistics.delete(line);
+    } else {
+      // Delete is more than add. Do not add, add delete.
+      reducedDeleteStatistics.set(line, deleteCount - addCount);
+    }
+  });
+  return { addStatistics: reducedAddStatistics, deleteStatistics: reducedDeleteStatistics };
+};
+
+type AggregatedStatistics = { readonly added: number; readonly deleted: number };
+
+const countLines = ({
+  addStatistics,
+  deleteStatistics
+}: MergedChangeStatistics): AggregatedStatistics => ({
+  added: Array.from(addStatistics.values()).reduce((accumulator, count) => accumulator + count, 0),
+  deleted: Array.from(deleteStatistics.values()).reduce(
+    (accumulator, count) => accumulator + count,
+    0
+  )
+});
+
 export default (diffString: string): number => {
   const parsedDiff = Diff.parsePatch(diffString);
   const statisticsList = parsedDiff
@@ -76,20 +118,16 @@ export default (diffString: string): number => {
     .map(diff => {
       const diffStatistics = getDiffStatistics(diff);
       const { oldFileName, newFileName, addStatistics, deleteStatistics } = diffStatistics;
-      const signficantLinesForOneFile =
-        Array.from(addStatistics.values()).reduce((accumulator, count) => accumulator + count, 0) +
-        Array.from(deleteStatistics.values()).reduce(
-          (accumulator, count) => accumulator + count,
-          0
-        );
-      console.log(
-        `Change ${oldFileName} => ${newFileName} has ${signficantLinesForOneFile} lines diff.`
-      );
+      const { added, deleted } = countLines({ addStatistics, deleteStatistics });
+      console.log(`Change ${oldFileName} => ${newFileName} has ${added + deleted} lines diff.`);
       return diffStatistics;
     });
-  const { addStatistics, deleteStatistics } = mergeDiffStatistics(statisticsList);
-  const signficantLinesForAllFiles =
-    Array.from(addStatistics.values()).reduce((accumulator, count) => accumulator + count, 0) +
-    Array.from(deleteStatistics.values()).reduce((accumulator, count) => accumulator + count, 0);
-  return signficantLinesForAllFiles;
+  const mergedStatistics = mergeDiffStatistics(statisticsList);
+  const { added: mergedAdded, deleted: mergedDeleted } = countLines(mergedStatistics);
+  console.log(`[including-moved] total added: ${mergedAdded}, total deleted: ${mergedDeleted}.`);
+  const { added: reducedAdded, deleted: reducedDeleted } = countLines(
+    reduceMergedLines(mergedStatistics)
+  );
+  console.log(`[excluding-moved] Total added: ${reducedAdded}, total deleted: ${reducedDeleted}.`);
+  return reducedAdded + reducedDeleted;
 };
