@@ -1,6 +1,12 @@
 import * as Diff from 'diff';
 
-const ignores: readonly string[] = ['yarn.lock', 'package-lock.json', 'Pods/', '.snap'];
+const ignores: readonly string[] = [
+  'yarn.lock',
+  'package-lock.json',
+  'pubspec.lock',
+  'Pods/',
+  '.snap'
+];
 
 const shouldBeIgnored = (path: string): boolean =>
   ignores.find(ignore => path.includes(ignore)) != null;
