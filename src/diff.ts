@@ -4,6 +4,7 @@ const ignores: readonly string[] = [
   'yarn.lock',
   'package-lock.json',
   'pubspec.lock',
+  'Podfile.lock',
   'Pods/',
   '.snap'
 ];
