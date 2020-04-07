@@ -6,11 +6,11 @@ const ignores: readonly string[] = [
   'pubspec.lock',
   'Podfile.lock',
   'Pods/',
-  '.snap'
+  '.snap',
 ];
 
 const shouldBeIgnored = (path: string): boolean =>
-  ignores.find(ignore => path.includes(ignore)) != null;
+  ignores.find((ignore) => path.includes(ignore)) != null;
 
 const shouldDiffBeIgnored = ({ oldFileName, newFileName }: Diff.ParsedDiff): boolean =>
   (oldFileName != null && shouldBeIgnored(oldFileName)) ||
@@ -26,32 +26,35 @@ type ChangeStatistics = {
 const getDiffStatistics = ({
   oldFileName: oldFilenameOptional,
   newFileName: newFilenameOptional,
-  hunks
+  hunks,
 }: Diff.ParsedDiff): ChangeStatistics => {
   const oldFileName = oldFilenameOptional ?? '';
   const newFileName = newFilenameOptional ?? '';
   const addStatistics = new Map<string, number>();
   const deleteStatistics = new Map<string, number>();
-  hunks
-    .flatMap(hunk => hunk.lines)
-    .forEach(line => {
-      switch (line[0]) {
-        case '+': {
-          const whiteSpaceStrippedLine = line.substring(1).trim();
-          const existingCount = addStatistics.get(whiteSpaceStrippedLine) ?? 0;
-          addStatistics.set(whiteSpaceStrippedLine, existingCount + 1);
-          break;
-        }
-        case '-': {
-          const whiteSpaceStrippedLine = line.substring(1).trim();
-          const existingCount = deleteStatistics.get(whiteSpaceStrippedLine) ?? 0;
-          deleteStatistics.set(whiteSpaceStrippedLine, existingCount + 1);
-          break;
-        }
-        default:
-          break;
-      }
-    });
+  const lines = hunks.flatMap((hunk) => hunk.lines);
+  const addedLines: string[] = [];
+  const deletedLines: string[] = [];
+  lines.forEach((line) => {
+    switch (line[0]) {
+      case '+':
+        addedLines.push(line.substring(1).trim());
+        break;
+      case '-':
+        deletedLines.push(line.substring(1).trim());
+        break;
+      default:
+        break;
+    }
+  });
+  addedLines.forEach((whiteSpaceStrippedLine) => {
+    const existingCount = addStatistics.get(whiteSpaceStrippedLine) ?? 0;
+    addStatistics.set(whiteSpaceStrippedLine, existingCount + 1);
+  });
+  deletedLines.forEach((whiteSpaceStrippedLine) => {
+    const existingCount = deleteStatistics.get(whiteSpaceStrippedLine) ?? 0;
+    deleteStatistics.set(whiteSpaceStrippedLine, existingCount + 1);
+  });
   return { oldFileName, newFileName, addStatistics, deleteStatistics };
 };
 
@@ -80,7 +83,7 @@ export const mergeDiffStatistics = (
 // Exposed for testing.
 export const reduceMergedLines = ({
   addStatistics,
-  deleteStatistics
+  deleteStatistics,
 }: MergedChangeStatistics): MergedChangeStatistics => {
   const reducedAddStatistics = new Map<string, number>();
   const reducedDeleteStatistics = new Map<string, number>(deleteStatistics);
@@ -109,20 +112,20 @@ type AggregatedStatistics = { readonly added: number; readonly deleted: number }
 
 const countLines = ({
   addStatistics,
-  deleteStatistics
+  deleteStatistics,
 }: MergedChangeStatistics): AggregatedStatistics => ({
   added: Array.from(addStatistics.values()).reduce((accumulator, count) => accumulator + count, 0),
   deleted: Array.from(deleteStatistics.values()).reduce(
     (accumulator, count) => accumulator + count,
     0
-  )
+  ),
 });
 
 export default (diffString: string): number => {
   const parsedDiff = Diff.parsePatch(diffString);
   const statisticsList = parsedDiff
-    .filter(diff => !shouldDiffBeIgnored(diff))
-    .map(diff => {
+    .filter((diff) => !shouldDiffBeIgnored(diff))
+    .map((diff) => {
       const diffStatistics = getDiffStatistics(diff);
       const { oldFileName, newFileName, addStatistics, deleteStatistics } = diffStatistics;
       const { added, deleted } = countLines({ addStatistics, deleteStatistics });
