@@ -47,13 +47,15 @@ const getDiffStatistics = ({
         break;
     }
   });
-  addedLines.forEach((whiteSpaceStrippedLine) => {
-    const existingCount = addStatistics.get(whiteSpaceStrippedLine) ?? 0;
-    addStatistics.set(whiteSpaceStrippedLine, existingCount + 1);
+  if (deletedLines.length === lines.length && addedLines.length === 0) {
+    // Ignore diff that deletes an entire file.
+    return { oldFileName, newFileName, addStatistics, deleteStatistics };
+  }
+  addedLines.forEach((line) => {
+    addStatistics.set(line, (addStatistics.get(line) ?? 0) + 1);
   });
-  deletedLines.forEach((whiteSpaceStrippedLine) => {
-    const existingCount = deleteStatistics.get(whiteSpaceStrippedLine) ?? 0;
-    deleteStatistics.set(whiteSpaceStrippedLine, existingCount + 1);
+  deletedLines.forEach((line) => {
+    deleteStatistics.set(line, (deleteStatistics.get(line) ?? 0) + 1);
   });
   return { oldFileName, newFileName, addStatistics, deleteStatistics };
 };
@@ -125,13 +127,7 @@ export default (diffString: string): number => {
   const parsedDiff = Diff.parsePatch(diffString);
   const statisticsList = parsedDiff
     .filter((diff) => !shouldDiffBeIgnored(diff))
-    .map((diff) => {
-      const diffStatistics = getDiffStatistics(diff);
-      const { oldFileName, newFileName, addStatistics, deleteStatistics } = diffStatistics;
-      const { added, deleted } = countLines({ addStatistics, deleteStatistics });
-      console.log(`Change ${oldFileName} => ${newFileName} has ${added + deleted} lines diff.`);
-      return diffStatistics;
-    });
+    .map(getDiffStatistics);
   const mergedStatistics = mergeDiffStatistics(statisticsList);
   const { added: mergedAdded, deleted: mergedDeleted } = countLines(mergedStatistics);
   console.log(`[including-moved] total added: ${mergedAdded}, total deleted: ${mergedDeleted}.`);
