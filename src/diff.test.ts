@@ -14,7 +14,7 @@ it('mergeDiffStatistics with dummy list works.', () => {
     { oldFileName: '', newFileName: '', addStatistics: new Map(), deleteStatistics: new Map() },
     { oldFileName: '', newFileName: '', addStatistics: new Map(), deleteStatistics: new Map() },
     { oldFileName: '', newFileName: '', addStatistics: new Map(), deleteStatistics: new Map() },
-    { oldFileName: '', newFileName: '', addStatistics: new Map(), deleteStatistics: new Map() }
+    { oldFileName: '', newFileName: '', addStatistics: new Map(), deleteStatistics: new Map() },
   ]);
   const addStatistics = Array.from(result.addStatistics.entries());
   const deleteStatistics = Array.from(result.deleteStatistics.entries());
@@ -29,23 +29,23 @@ it('mergeDiffStatistics with singleton input works.', () => {
       newFileName: '',
       addStatistics: new Map([
         ['a', 3],
-        ['b', 4]
+        ['b', 4],
       ]),
       deleteStatistics: new Map([
         ['e', 4],
-        ['f', 5]
-      ])
-    }
+        ['f', 5],
+      ]),
+    },
   ]);
   const addStatistics = Array.from(result.addStatistics.entries());
   const deleteStatistics = Array.from(result.deleteStatistics.entries());
   expect(addStatistics).toEqual([
     ['a', 3],
-    ['b', 4]
+    ['b', 4],
   ]);
   expect(deleteStatistics).toEqual([
     ['e', 4],
-    ['f', 5]
+    ['f', 5],
   ]);
 });
 
@@ -56,12 +56,12 @@ it('mergeDiffStatistics with simple input works.', () => {
       newFileName: '',
       addStatistics: new Map([
         ['a', 3],
-        ['b', 4]
+        ['b', 4],
       ]),
       deleteStatistics: new Map([
         ['e', 4],
-        ['f', 5]
-      ])
+        ['f', 5],
+      ]),
     },
     {
       oldFileName: '',
@@ -69,25 +69,25 @@ it('mergeDiffStatistics with simple input works.', () => {
       addStatistics: new Map([
         ['a', 4],
         ['b', 5],
-        ['c', 4]
+        ['c', 4],
       ]),
       deleteStatistics: new Map([
         ['g', 7],
-        ['f', 5]
-      ])
-    }
+        ['f', 5],
+      ]),
+    },
   ]);
   const addStatistics = Array.from(result.addStatistics.entries());
   const deleteStatistics = Array.from(result.deleteStatistics.entries());
   expect(addStatistics).toEqual([
     ['a', 7],
     ['b', 9],
-    ['c', 4]
+    ['c', 4],
   ]);
   expect(deleteStatistics).toEqual([
     ['e', 4],
     ['f', 10],
-    ['g', 7]
+    ['g', 7],
   ]);
 });
 
@@ -97,24 +97,24 @@ it('reduceMergedLines works', () => {
       ['a', 3],
       ['b', 3],
       ['c', 3],
-      ['d', 5]
+      ['d', 5],
     ]),
     deleteStatistics: new Map([
       ['a', 3],
       ['b', 2],
       ['c', 4],
-      ['e', 6]
-    ])
+      ['e', 6],
+    ]),
   });
   const addStatistics = Array.from(result.addStatistics.entries());
   const deleteStatistics = Array.from(result.deleteStatistics.entries());
   expect(addStatistics).toEqual([
     ['b', 1],
-    ['d', 5]
+    ['d', 5],
   ]);
   expect(deleteStatistics).toEqual([
     ['c', 1],
-    ['e', 6]
+    ['e', 6],
   ]);
 });
 
@@ -148,5 +148,5 @@ testOnRepo(
 testOnRepo(
   '557ae1bac01009919feaf615489d14c3a818c8db',
   '26af977281bb05191206e477ddb4fbf80d9e750b',
-  26
+  17
 );

@@ -2,9 +2,12 @@ import * as Diff from 'diff';
 
 const ignores: readonly string[] = [
   'yarn.lock',
+  'package.json',
   'package-lock.json',
   'pubspec.lock',
+  'Podfile',
   'Podfile.lock',
+  'build.gradle',
   'Pods/',
   '.snap',
 ];
