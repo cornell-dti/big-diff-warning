@@ -28,30 +28,32 @@ const getDiffStatistics = ({
   newFileName: newFilenameOptional,
   hunks,
 }: Diff.ParsedDiff): ChangeStatistics => {
-  const oldFileName = oldFilenameOptional ?? '';
-  const newFileName = newFilenameOptional ?? '';
+  const oldFileName = oldFilenameOptional ?? '/dev/null';
+  const newFileName = newFilenameOptional ?? '/dev/null';
   const addStatistics = new Map<string, number>();
   const deleteStatistics = new Map<string, number>();
+
+  if (newFileName === '/dev/null') {
+    console.log(`Detected deleted file: ${oldFileName} => ${newFileName}`);
+    // Ignore diff that deletes an entire file.
+    return { oldFileName, newFileName, addStatistics, deleteStatistics };
+  }
+
   const lines = hunks.flatMap((hunk) => hunk.lines);
   const addedLines: string[] = [];
   const deletedLines: string[] = [];
   lines.forEach((line) => {
     switch (line[0]) {
       case '+':
-        addedLines.push(line.substring(1).trim());
+        addedLines.push(line.substring(1).trim().replace(/\s/g, ''));
         break;
       case '-':
-        deletedLines.push(line.substring(1).trim());
+        deletedLines.push(line.substring(1).trim().replace(/\s/g, ''));
         break;
       default:
         break;
     }
   });
-  if (deletedLines.length === lines.length && addedLines.length === 0) {
-    console.log(`Detected deleted file: ${oldFileName} => ${newFileName}`);
-    // Ignore diff that deletes an entire file.
-    return { oldFileName, newFileName, addStatistics, deleteStatistics };
-  }
   addedLines.forEach((line) => {
     addStatistics.set(line, (addStatistics.get(line) ?? 0) + 1);
   });
