@@ -48,6 +48,7 @@ const getDiffStatistics = ({
     }
   });
   if (deletedLines.length === lines.length && addedLines.length === 0) {
+    console.log(`Detected deleted file: ${oldFileName} => ${newFileName}`);
     // Ignore diff that deletes an entire file.
     return { oldFileName, newFileName, addStatistics, deleteStatistics };
   }
@@ -57,6 +58,13 @@ const getDiffStatistics = ({
   deletedLines.forEach((line) => {
     deleteStatistics.set(line, (deleteStatistics.get(line) ?? 0) + 1);
   });
+  const { added, deleted } = countLines({
+    addStatistics,
+    deleteStatistics,
+  });
+  console.log(
+    `Changed file (${oldFileName} => ${newFileName}): added: ${added}, deleted: ${deleted}`
+  );
   return { oldFileName, newFileName, addStatistics, deleteStatistics };
 };
 
