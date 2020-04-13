@@ -10,6 +10,11 @@ const ignores: readonly string[] = [
   'build.gradle',
   'Pods/',
   '.snap',
+  'tsconfig.json',
+  '.eslintrc.json',
+  '.eslintrc.js',
+  '.eslintrc',
+  '.gitignore',
 ];
 
 const shouldBeIgnored = (path: string): boolean =>
