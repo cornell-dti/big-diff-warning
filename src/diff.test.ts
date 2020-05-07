@@ -130,7 +130,7 @@ const testOnRepo = (commit1: string, commit2: string, expected: number): void =>
 testOnRepo(
   'caacb1aeb2be692fe8803ac91ca7c04493830fcd',
   '79fc97d7a9dd644914e3942170b8fd5a4d7f27fb',
-  13
+  11
 );
 
 testOnRepo(

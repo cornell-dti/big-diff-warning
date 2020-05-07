@@ -50,13 +50,18 @@ const getDiffStatistics = ({
   const lines = hunks.flatMap((hunk) => hunk.lines);
   const addedLines: string[] = [];
   const deletedLines: string[] = [];
+  const removeFormatOnlyCharacters = (line: string) =>
+    line
+      .trim()
+      .replace(/\s/g, '')
+      .replace(/['";,]/g, '');
   lines.forEach((line) => {
     switch (line[0]) {
       case '+':
-        addedLines.push(line.substring(1).trim().replace(/\s/g, ''));
+        addedLines.push(removeFormatOnlyCharacters(line.substring(1)));
         break;
       case '-':
-        deletedLines.push(line.substring(1).trim().replace(/\s/g, ''));
+        deletedLines.push(removeFormatOnlyCharacters(line.substring(1)));
         break;
       default:
         break;
