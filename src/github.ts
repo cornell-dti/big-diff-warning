@@ -1,5 +1,5 @@
 import * as github from '@actions/github';
-import Octokit from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 
 const USER_LOGIN = 'dti-github-bot';
 
@@ -19,14 +19,14 @@ const getPullRequest = (): PullRequest => {
     number: pullRequest.number,
     owner: pullRequest.head.repo.owner.login,
     repo: pullRequest.head.repo.name,
-    authorLogin: pullRequest.user.login
+    authorLogin: pullRequest.user.login,
   };
 };
 
 const getOctokit = (githubToken: string): Octokit =>
   new Octokit({
     auth: `token ${githubToken}`,
-    userAgent: 'cornell-dti/big-diff-warning'
+    userAgent: 'cornell-dti/big-diff-warning',
   });
 
 export const getDiff = async (githubToken: string): Promise<string> => {
@@ -36,7 +36,7 @@ export const getDiff = async (githubToken: string): Promise<string> => {
     owner,
     repo,
     pull_number: number,
-    headers: { accept: 'application/vnd.github.v3.diff' }
+    headers: { accept: 'application/vnd.github.v3.diff' },
   });
   // The type definition cannot understand using `vnd.github.v3.diff` will return a diff string.
   return (diff as any) as string;
@@ -52,10 +52,10 @@ export const commentOnPullRequest = async (
   const { data: comments } = await octokit.issues.listComments({
     owner,
     repo,
-    issue_number: number
+    issue_number: number,
   });
   const existingComment = comments.find(
-    comment => comment.user.login === USER_LOGIN && comment.body.startsWith(prefix)
+    (comment) => comment.user.login === USER_LOGIN && comment.body.startsWith(prefix)
   );
   const body = `${prefix} ${comment}`;
   if (existingComment == null) {
@@ -63,7 +63,7 @@ export const commentOnPullRequest = async (
       owner,
       repo,
       issue_number: number,
-      body
+      body,
     });
     return;
   }
@@ -71,27 +71,27 @@ export const commentOnPullRequest = async (
     owner,
     repo,
     comment_id: existingComment.id,
-    body
+    body,
   });
 };
 
 const getReviewers = (): string[] => {
   const { authorLogin } = getPullRequest();
   return ['dti-github-bot', 'SamChou19815', 'JBoss925', 'lsizemore8'].filter(
-    id => id != authorLogin
+    (id) => id != authorLogin
   );
 };
 
 export const requestReview = async (githubToken: string): Promise<void> => {
   const { owner, repo, number } = getPullRequest();
   const octokit = getOctokit(githubToken);
-  const promises = getReviewers().map(async reviewer => {
+  const promises = getReviewers().map(async (reviewer) => {
     try {
       await octokit.pulls.createReviewRequest({
         owner,
         repo,
         pull_number: number,
-        reviewers: [reviewer]
+        reviewers: [reviewer],
       });
     } catch (error) {
       console.warn(error.message);
