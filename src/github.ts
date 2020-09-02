@@ -77,7 +77,7 @@ export const commentOnPullRequest = async (
 
 const getReviewers = (): string[] => {
   const { authorLogin } = getPullRequest();
-  return ['dti-github-bot', 'meganyin13', 'JBoss925', 'lsizemore8'].filter(
+  return ['meganyin13', 'JBoss925', 'lsizemore8'].filter(
     (id) => id != authorLogin
   );
 };
