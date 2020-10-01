@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@actions/core": "^1.2.4",
+    "@actions/core": "^1.2.6",
     "@actions/github": "^2.2.0",
     "@octokit/rest": "^17.8.0",
     "diff": "^4.0.2"
