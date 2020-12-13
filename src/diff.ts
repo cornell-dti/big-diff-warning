@@ -10,6 +10,7 @@ const ignores: readonly string[] = [
   'build.gradle',
   'Pods/',
   '.snap',
+  '.svg',
   'tsconfig.json',
   '.eslintrc.json',
   '.eslintrc.js',
