@@ -77,7 +77,7 @@ export const commentOnPullRequest = async (
 
 const getReviewers = (): string[] => {
   const { authorLogin } = getPullRequest();
-  return ['meganyin13', 'JBoss925', 'lsizemore8'].filter(
+  return ['meganyin13', 'JBoss925', 'chansen424'].filter(
     (id) => id != authorLogin
   );
 };
