@@ -5,6 +5,7 @@ const ignores: readonly string[] = [
   'package.json',
   'package-lock.json',
   'pubspec.lock',
+  'pubspec.yaml',
   'Podfile',
   'Podfile.lock',
   'build.gradle',
