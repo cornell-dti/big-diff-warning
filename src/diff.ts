@@ -12,6 +12,7 @@ const ignores: readonly string[] = [
   'Pods/',
   '.snap',
   '.svg',
+  '.png',
   'tsconfig.json',
   '.eslintrc.json',
   '.eslintrc.js',
