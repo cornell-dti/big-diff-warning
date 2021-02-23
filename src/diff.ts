@@ -2,8 +2,7 @@ import * as Diff from 'diff';
 
 const ignores: readonly string[] = [
   'yarn.lock',
-  'package.json',
-  'package-lock.json',
+  '.json',
   'pubspec.lock',
   'pubspec.yaml',
   'Podfile',
@@ -13,8 +12,6 @@ const ignores: readonly string[] = [
   '.snap',
   '.svg',
   '.png',
-  'tsconfig.json',
-  '.eslintrc.json',
   '.eslintrc.js',
   '.eslintrc',
   '.gitignore',
