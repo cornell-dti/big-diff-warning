@@ -55,7 +55,7 @@ export const commentOnPullRequest = async (
     issue_number: number,
   });
   const existingComment = comments.find(
-    (comment) => comment.user.login === USER_LOGIN && comment.body.startsWith(prefix)
+    (comment) => comment.user?.login === USER_LOGIN && comment.body?.startsWith(prefix)
   );
   const body = `${prefix} ${comment}`;
   if (existingComment == null) {
@@ -77,9 +77,7 @@ export const commentOnPullRequest = async (
 
 const getReviewers = (): string[] => {
   const { authorLogin } = getPullRequest();
-  return ['meganyin13', 'JBoss925', 'chansen424'].filter(
-    (id) => id != authorLogin
-  );
+  return ['meganyin13', 'JBoss925', 'chansen424'].filter((id) => id != authorLogin);
 };
 
 export const requestReview = async (githubToken: string): Promise<void> => {
@@ -87,7 +85,7 @@ export const requestReview = async (githubToken: string): Promise<void> => {
   const octokit = getOctokit(githubToken);
   const promises = getReviewers().map(async (reviewer) => {
     try {
-      await octokit.pulls.createReviewRequest({
+      await octokit.pulls.requestReviewers({
         owner,
         repo,
         pull_number: number,
