@@ -7,7 +7,8 @@ const THRESHOLD = 1000;
 const main = async (): Promise<void> => {
   const BOT_TOKEN = process.env.BOT_TOKEN;
   if (!BOT_TOKEN) {
-    throw new Error('Environment variable BOT_TOKEN must be set!');
+    core.warning('Environment variable BOT_TOKEN is not set! The job will be aborted.');
+    return;
   }
   const diff = await getDiff(BOT_TOKEN);
   // The type definition cannot understand using `vnd.github.v3.diff` will return a diff string.
