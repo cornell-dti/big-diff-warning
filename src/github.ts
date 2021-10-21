@@ -77,7 +77,7 @@ export const commentOnPullRequest = async (
 
 const getReviewers = (): string[] => {
   const { authorLogin } = getPullRequest();
-  return ['meganyin13', 'JBoss925', 'chansen424'].filter((id) => id != authorLogin);
+  return ['Enochen', 'ngwattcos'].filter((id) => id != authorLogin);
 };
 
 export const requestReview = async (githubToken: string): Promise<void> => {
