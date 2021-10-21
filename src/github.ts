@@ -39,7 +39,7 @@ export const getDiff = async (githubToken: string): Promise<string> => {
     headers: { accept: 'application/vnd.github.v3.diff' },
   });
   // The type definition cannot understand using `vnd.github.v3.diff` will return a diff string.
-  return (diff as any) as string;
+  return diff as any as string;
 };
 
 export const commentOnPullRequest = async (
@@ -92,7 +92,7 @@ export const requestReview = async (githubToken: string): Promise<void> => {
         reviewers: [reviewer],
       });
     } catch (error) {
-      console.warn(error.message);
+      console.warn((error as Error).message);
     }
   });
   await Promise.all(promises);

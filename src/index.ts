@@ -12,7 +12,7 @@ const main = async (): Promise<void> => {
   }
   const diff = await getDiff(BOT_TOKEN);
   // The type definition cannot understand using `vnd.github.v3.diff` will return a diff string.
-  let significantChangedLines = computeSignificantLines((diff as any) as string);
+  let significantChangedLines = computeSignificantLines(diff as any as string);
   let comment = `Significant lines: ${significantChangedLines}.`;
   if (significantChangedLines > THRESHOLD) {
     comment += ' This diff might be too big! Developer leads are invited to review the code.';
@@ -25,6 +25,6 @@ const main = async (): Promise<void> => {
   try {
     await main();
   } catch (error) {
-    core.setFailed(error.message);
+    core.setFailed((error as Error).message);
   }
 })();

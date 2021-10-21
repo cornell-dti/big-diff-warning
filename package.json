@@ -5,25 +5,33 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "precompile": "yarn build",
-    "compile": "ncc build dist/index.js -o compiled -m",
+    "compile": "esbuild --bundle --minify --platform=node --outdir=compiled src/index.ts",
     "test": "jest"
   },
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0",
-    "@octokit/rest": "^18.2.0",
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0",
+    "@octokit/rest": "^18.12.0",
     "diff": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.13.1",
-    "@babel/preset-env": "^7.13.5",
-    "@babel/preset-typescript": "^7.13.0",
-    "@types/diff": "^5.0.0",
-    "@types/jest": "^26.0.20",
-    "@vercel/ncc": "^0.27.0",
-    "babel-jest": "^26.6.3",
-    "jest": "^26.6.3",
-    "typescript": "4.2.2"
+    "@types/diff": "^5.0.1",
+    "@types/jest": "^27.0.2",
+    "babel-jest": "^27.3.1",
+    "esbuild": "^0.13.8",
+    "esbuild-jest-transform": "^1.1.0",
+    "jest": "^27.3.1",
+    "typescript": "4.4.4"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "esbuild-jest-transform"
+    },
+    "coverageDirectory": "coverage",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ],
+    "testEnvironment": "node"
   }
 }
