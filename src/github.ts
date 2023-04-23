@@ -1,7 +1,7 @@
-import * as github from '@actions/github';
-import { Octokit } from '@octokit/rest';
+import * as github from "@actions/github";
+import { Octokit } from "@octokit/rest";
 
-const USER_LOGIN = 'dti-github-bot';
+const USER_LOGIN = "dti-github-bot";
 
 type PullRequest = {
   readonly number: number;
@@ -13,7 +13,7 @@ type PullRequest = {
 const getPullRequest = (): PullRequest => {
   const pullRequest = github.context.payload.pull_request;
   if (pullRequest == null) {
-    throw new Error('The action must be used in a PR context!');
+    throw new Error("The action must be used in a PR context!");
   }
   return {
     number: pullRequest.number,
@@ -26,7 +26,7 @@ const getPullRequest = (): PullRequest => {
 const getOctokit = (githubToken: string): Octokit =>
   new Octokit({
     auth: `token ${githubToken}`,
-    userAgent: 'cornell-dti/big-diff-warning',
+    userAgent: "cornell-dti/big-diff-warning",
   });
 
 export const getDiff = async (githubToken: string): Promise<string> => {
@@ -36,7 +36,7 @@ export const getDiff = async (githubToken: string): Promise<string> => {
     owner,
     repo,
     pull_number: number,
-    headers: { accept: 'application/vnd.github.v3.diff' },
+    headers: { accept: "application/vnd.github.v3.diff" },
   });
   // The type definition cannot understand using `vnd.github.v3.diff` will return a diff string.
   return diff as any as string;
@@ -45,7 +45,7 @@ export const getDiff = async (githubToken: string): Promise<string> => {
 export const commentOnPullRequest = async (
   githubToken: string,
   prefix: string,
-  comment: string
+  comment: string,
 ): Promise<void> => {
   const { owner, repo, number } = getPullRequest();
   const octokit = getOctokit(githubToken);
@@ -55,7 +55,8 @@ export const commentOnPullRequest = async (
     issue_number: number,
   });
   const existingComment = comments.find(
-    (comment) => comment.user?.login === USER_LOGIN && comment.body?.startsWith(prefix)
+    (comment) =>
+      comment.user?.login === USER_LOGIN && comment.body?.startsWith(prefix),
   );
   const body = `${prefix} ${comment}`;
   if (existingComment == null) {
@@ -77,7 +78,7 @@ export const commentOnPullRequest = async (
 
 const getReviewers = (): string[] => {
   const { authorLogin } = getPullRequest();
-  return ['AkashAryal', 'michaeltorku'].filter((id) => id != authorLogin);
+  return ["michelleli01", "epicdragon44"].filter((id) => id != authorLogin);
 };
 
 export const requestReview = async (githubToken: string): Promise<void> => {
