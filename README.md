@@ -23,5 +23,9 @@ jobs:
 GitHub Actions require the repository to be self-contained. Therefore, the compiled
 [`index.js`](./compiled/index.js) must be checked into repository.
 
-Run `yarn compile` before commit to ensure that [`index.js`](./compiled/index.js) is in
+1. Run `yarn`
+2. Run `yarn test`
+3. Run `yarn compile` 
+
+before commit to ensure that [`index.js`](./compiled/index.js) is in
 sync with sources.
