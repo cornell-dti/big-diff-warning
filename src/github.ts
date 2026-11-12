@@ -115,7 +115,7 @@ export const requestReview = async (githubToken: string): Promise<boolean> => {
   const octokit = getOctokit(githubToken);
   if (await hasExcludedReviewAuthor(octokit, pullRequest)) {
     console.log(
-      `Skipping big-diff-warningreview request to dev leads for commits by ${EXCLUDED_REVIEW_AUTHOR}.`,
+      `Skipping big-diff-warning review request to dev leads for commits by ${EXCLUDED_REVIEW_AUTHOR}.`,
     );
     return false;
   }
