@@ -15,10 +15,12 @@ const main = async (): Promise<void> => {
   let significantChangedLines = computeSignificantLines(diff as any as string);
   let comment = `Significant lines: ${significantChangedLines}.`;
   if (significantChangedLines > THRESHOLD) {
-    comment += ' This diff might be too big! Developer leads are invited to review the code.';
-    requestReview(BOT_TOKEN);
+    const requestedReview = await requestReview(BOT_TOKEN);
+    comment += requestedReview
+      ? ' This diff might be too big! Developer leads are invited to review the code.'
+      : ' This diff might be too big!';
   }
-  commentOnPullRequest(BOT_TOKEN, '[diff-counting]', comment);
+  await commentOnPullRequest(BOT_TOKEN, '[diff-counting]', comment);
 };
 
 (async () => {

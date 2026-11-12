@@ -2,6 +2,7 @@ import * as github from "@actions/github";
 import { Octokit } from "@octokit/rest";
 
 const USER_LOGIN = "dti-github-bot";
+const EXCLUDED_REVIEW_AUTHOR = "clementroze"; // temporary exclusion for commits made for IDOL's 2026 Redesign.
 
 type PullRequest = {
   readonly number: number;
@@ -81,9 +82,44 @@ const getReviewers = (): string[] => {
   return ["3TTemi", "abrar-amin","nadia-choop","shah-esha","plumshum"].filter((id) => id != authorLogin);
 };
 
-export const requestReview = async (githubToken: string): Promise<void> => {
-  const { owner, repo, number } = getPullRequest();
+const isExcludedReviewAuthor = (login: string | null | undefined): boolean =>
+  login?.toLowerCase() === EXCLUDED_REVIEW_AUTHOR;
+
+const hasExcludedReviewAuthor = async (
+  octokit: Octokit,
+  pullRequest: PullRequest,
+): Promise<boolean> => {
+  if (isExcludedReviewAuthor(pullRequest.authorLogin)) {
+    return true;
+  }
+  try {
+    const commits = await octokit.paginate(octokit.pulls.listCommits, {
+      owner: pullRequest.owner,
+      repo: pullRequest.repo,
+      pull_number: pullRequest.number,
+      per_page: 100,
+    });
+    return commits.some(
+      (commit) =>
+        isExcludedReviewAuthor(commit.author?.login) ||
+        isExcludedReviewAuthor(commit.committer?.login),
+    );
+  } catch (error) {
+    console.warn((error as Error).message);
+    return false;
+  }
+};
+
+export const requestReview = async (githubToken: string): Promise<boolean> => {
+  const pullRequest = getPullRequest();
   const octokit = getOctokit(githubToken);
+  if (await hasExcludedReviewAuthor(octokit, pullRequest)) {
+    console.log(
+      `Skipping big-diff-warning review request to dev leads for commits by ${EXCLUDED_REVIEW_AUTHOR}. #YOLO`,
+    );
+    return false;
+  }
+  const { owner, repo, number } = pullRequest;
   const promises = getReviewers().map(async (reviewer) => {
     try {
       await octokit.pulls.requestReviewers({
@@ -97,4 +133,5 @@ export const requestReview = async (githubToken: string): Promise<void> => {
     }
   });
   await Promise.all(promises);
+  return true;
 };
